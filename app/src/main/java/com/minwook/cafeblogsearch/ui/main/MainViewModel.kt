@@ -4,8 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.minwook.cafeblogsearch.data.BlogResponse
-import com.minwook.cafeblogsearch.data.CafeResponse
+import com.minwook.cafeblogsearch.data.*
 import com.minwook.cafeblogsearch.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.Single
@@ -20,8 +19,8 @@ class MainViewModel @Inject constructor(
     private val searchRepository: SearchRepository
 ) : ViewModel() {
 
-    private val _searchList = MutableLiveData<List<Any>>()
-    val searchList: LiveData<List<Any>>
+    private val _searchList = MutableLiveData<List<SearchItem>>()
+    val searchList: LiveData<List<SearchItem>>
         get() = _searchList
 
     private val _error = MutableLiveData<String>()
@@ -30,11 +29,11 @@ class MainViewModel @Inject constructor(
 
     private val compositeDisposable = CompositeDisposable()
 
-    fun loadSearchList(text: String) {
+    fun loadSearchList(text: String, page: Int = 1) {
         Log.e("coin", "loadSearchList text start : $text")
         // todo merge
 
-        compositeDisposable.add(
+        /*compositeDisposable.add(
             searchRepository.getBlogSearchResult(text)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -59,30 +58,38 @@ class MainViewModel @Inject constructor(
                 }, {
                     Log.e("coin", "loadSearchList error : ${it.localizedMessage}")
                 })
-        )
+        )*/
 
         compositeDisposable.add(
             Single.zip(
-                searchRepository.getBlogSearchResult(text).subscribeOn(Schedulers.io()),
-                searchRepository.getCafeSearchResult(text).subscribeOn(Schedulers.io()),
+                searchRepository.getBlogSearchResult(text, page).subscribeOn(Schedulers.io()),
+                searchRepository.getCafeSearchResult(text, page).subscribeOn(Schedulers.io()),
                 BiFunction { firstResonse: BlogResponse,
-                             secondResponse: CafeResponse ->
-                    {
-                        val searchList = arrayListOf<Any>()
-                        searchList.addAll(firstResonse.documents)
-                        searchList.addAll(secondResponse.documents)
-                        Log.e("coin", "loadSearchList Blog size : ${firstResonse.documents.size} , Cafe size : ${secondResponse.documents.size}")
-                        searchList
-                    }
+                             secondResponse: CafeResponse -> addItemList(firstResonse.documents, secondResponse.documents)
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Log.e("coin", "loadSearchList cafe ~ : ${listOf(it).size}")
-                    _searchList.value = listOf(it)
+                    Log.d("coin", "loadSearchList zip ~ : ${it.size}")
+                    _searchList.value = it
                 }, {
-                    Log.e("coin", "loadCoinTickerList error : ${it.localizedMessage}")
+                    Log.e("coin", "loadSearchList error : ${it.localizedMessage}")
                 })
         )
+    }
+
+    private fun addItemList(firstList: ArrayList<Blog>, secondList: ArrayList<Cafe>): ArrayList<SearchItem> {
+        val searchList = arrayListOf<SearchItem>()
+
+        firstList.forEach {
+            searchList.add(SearchItem(it.title, it.contents, it.url, it.blogname, it.thumbnail, it.datetime, "blog"))
+        }
+
+        secondList.forEach {
+            searchList.add(SearchItem(it.title, it.contents, it.url, it.cafename, it.thumbnail, it.datetime, "cafe"))
+        }
+
+        Log.d("coin", "zip Blog size : ${firstList.size} , Cafe size : ${secondList.size}")
+        return searchList
     }
 
     fun disposableAll() {

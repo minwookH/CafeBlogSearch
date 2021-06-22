@@ -1,6 +1,6 @@
 package com.minwook.cafeblogsearch.di
 
-import com.minwook.cryptocoinsproject.network.ServerAPI
+import com.minwook.cafeblogsearch.network.ServerAPI
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
