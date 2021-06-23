@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.minwook.cafeblogsearch.data.*
 import com.minwook.cafeblogsearch.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -22,6 +23,10 @@ class MainViewModel @Inject constructor(
     private val _searchList = MutableLiveData<ArrayList<SearchItem>>()
     val searchList: LiveData<ArrayList<SearchItem>>
         get() = _searchList
+
+    private val _searchHistoryList = MutableLiveData<List<String>>()
+    val searchHistoryList: LiveData<List<String>>
+        get() = _searchHistoryList
 
     private val _error = MutableLiveData<String>()
     val error: LiveData<String>
@@ -40,7 +45,7 @@ class MainViewModel @Inject constructor(
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    it.sortByDescending { item -> item.title }
+                    it.sortBy { item -> item.title }
                     _searchList.value = it
                 }, {
                     Log.e("search", "loadSearchList error : ${it.localizedMessage}")
@@ -86,6 +91,32 @@ class MainViewModel @Inject constructor(
         )
     }
 
+    fun getSearchHistory() {
+        compositeDisposable.add(
+            searchRepository.getSearchHistory()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    val map = it.map { data -> data.searchText }
+                    _searchHistoryList.postValue(map)
+                }, {
+                    _searchHistoryList.postValue(listOf())
+                    Log.e("search", "loadSearchList error : ${it.localizedMessage}")
+                })
+        )
+    }
+
+    fun insertSearchHistory(text: String) {
+        compositeDisposable.add(
+            Single.just(text).subscribeOn(Schedulers.io())
+                .subscribe({
+                    searchRepository.insertSearchHistory(it)
+                }, {
+                    Log.e("search", it.localizedMessage)
+                })
+        )
+    }
+
     private fun combineItemList(firstList: ArrayList<Blog>, secondList: ArrayList<Cafe>): ArrayList<SearchItem> {
         val searchList = arrayListOf<SearchItem>()
 
@@ -100,7 +131,8 @@ class MainViewModel @Inject constructor(
         return searchList
     }
 
-    fun disposableAll() {
+    override fun onCleared() {
         compositeDisposable.dispose()
+        super.onCleared()
     }
 }
