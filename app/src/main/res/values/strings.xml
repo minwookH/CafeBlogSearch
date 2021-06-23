@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">CafeBlogSearch</string>
+
+    <string-array name="fillter_array">
+        <item>Mercury</item>
+        <item>Venus</item>
+        <item>Earth</item>
+    </string-array>
 </resources>

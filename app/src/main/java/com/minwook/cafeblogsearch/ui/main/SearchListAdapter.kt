@@ -1,17 +1,16 @@
 package com.minwook.cafeblogsearch.ui.main
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.minwook.cafeblogsearch.data.Header
 import com.minwook.cafeblogsearch.data.SearchItem
 import com.minwook.cafeblogsearch.databinding.ListItemHeaderBinding
 import com.minwook.cafeblogsearch.databinding.ListItemSearchBinding
 import com.minwook.cafeblogsearch.ui.main.viewholder.HeaderViewHolder
 import com.minwook.cafeblogsearch.ui.main.viewholder.SearchViewHolder
 
-class CoinListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class SearchListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
         const val TYPE_HEADER = 1
@@ -43,15 +42,30 @@ class CoinListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun getItemCount(): Int = list.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        //(holder as CoinViewHolder).bind(list[position])
+        when (holder.itemViewType) {
+            TYPE_HEADER -> (holder as HeaderViewHolder).bind(list[position] as Header)
+            else -> (holder as SearchViewHolder).bind(list[position] as SearchItem)
+        }
     }
 
     override fun getItemViewType(position: Int): Int {
-        return super.getItemViewType(position)
+        return when (position) {
+            0 -> TYPE_HEADER
+            else -> TYPE_SEARCH_ITEM
+        }
     }
 
     override fun getItemId(position: Int): Long {
         return position.toLong()
+    }
+
+    fun addHeader(header: Header) {
+        list.add(header)
+    }
+
+    fun setSearchList(searchlist: ArrayList<SearchItem>) {
+        this.list.addAll(searchlist)
+        notifyDataSetChanged()
     }
 
     fun getList(): ArrayList<Any> = list

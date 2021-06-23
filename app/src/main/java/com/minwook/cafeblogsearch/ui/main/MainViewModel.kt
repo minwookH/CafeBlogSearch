@@ -19,8 +19,8 @@ class MainViewModel @Inject constructor(
     private val searchRepository: SearchRepository
 ) : ViewModel() {
 
-    private val _searchList = MutableLiveData<List<SearchItem>>()
-    val searchList: LiveData<List<SearchItem>>
+    private val _searchList = MutableLiveData<ArrayList<SearchItem>>()
+    val searchList: LiveData<ArrayList<SearchItem>>
         get() = _searchList
 
     private val _error = MutableLiveData<String>()
@@ -30,7 +30,7 @@ class MainViewModel @Inject constructor(
     private val compositeDisposable = CompositeDisposable()
 
     fun loadSearchList(text: String, page: Int = 1) {
-        Log.e("coin", "loadSearchList text start : $text")
+        Log.e("search", "loadSearchList text start : $text")
         // todo merge
 
         /*compositeDisposable.add(
@@ -65,14 +65,17 @@ class MainViewModel @Inject constructor(
                 searchRepository.getBlogSearchResult(text, page).subscribeOn(Schedulers.io()),
                 searchRepository.getCafeSearchResult(text, page).subscribeOn(Schedulers.io()),
                 BiFunction { firstResonse: BlogResponse,
-                             secondResponse: CafeResponse -> addItemList(firstResonse.documents, secondResponse.documents)
+                             secondResponse: CafeResponse ->
+                    addItemList(firstResonse.documents, secondResponse.documents)
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Log.d("coin", "loadSearchList zip ~ : ${it.size}")
+                    Log.d("search", "loadSearchList zip ~11 : $it")
+                    it.sortByDescending { item -> item.title }
+                    Log.d("search", "loadSearchList zip ~22 : $it")
                     _searchList.value = it
                 }, {
-                    Log.e("coin", "loadSearchList error : ${it.localizedMessage}")
+                    Log.e("search", "loadSearchList error : ${it.localizedMessage}")
                 })
         )
     }
@@ -88,7 +91,7 @@ class MainViewModel @Inject constructor(
             searchList.add(SearchItem(it.title, it.contents, it.url, it.cafename, it.thumbnail, it.datetime, "cafe"))
         }
 
-        Log.d("coin", "zip Blog size : ${firstList.size} , Cafe size : ${secondList.size}")
+        Log.d("search", "zip Blog size : ${firstList.size} , Cafe size : ${secondList.size} , searchList : ${searchList.size}")
         return searchList
     }
 
