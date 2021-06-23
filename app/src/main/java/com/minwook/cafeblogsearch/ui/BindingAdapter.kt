@@ -27,6 +27,12 @@ object BindingAdapter {
     }
 
     @JvmStatic
+    @BindingAdapter("dateTimeHHmm")
+    fun bindDateTimeHHmm(view: TextView, date: String) {
+        view.text = DateTime(date).toString("yyyy년 MM월 dd일 aa hh시 mm분")
+    }
+
+    @JvmStatic
     @BindingAdapter("label")
     fun bindLabel(view: TextView, label: String) {
         view.text = label
@@ -41,6 +47,6 @@ object BindingAdapter {
     @JvmStatic
     @BindingAdapter("htmlText")
     fun bindHtmlText(view: TextView, text: String) {
-        view.text = HtmlCompat.fromHtml(text, Html.FROM_HTML_MODE_LEGACY)
+        view.text = HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_LEGACY)
     }
 }

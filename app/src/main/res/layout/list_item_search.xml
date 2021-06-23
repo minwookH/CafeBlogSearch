@@ -7,10 +7,6 @@
         <variable
             name="searchItem"
             type="com.minwook.cafeblogsearch.data.SearchItem" />
-
-        <variable
-            name="dateTime"
-            type="org.joda.time.DateTime" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

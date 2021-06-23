@@ -1,5 +1,6 @@
 package com.minwook.cafeblogsearch
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -8,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.minwook.cafeblogsearch.data.Header
 import com.minwook.cafeblogsearch.databinding.ActivityMainBinding
+import com.minwook.cafeblogsearch.ui.detail.DetailActivity
 import com.minwook.cafeblogsearch.ui.main.MainViewModel
 import com.minwook.cafeblogsearch.ui.main.SearchListAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -69,6 +71,13 @@ class MainActivity : AppCompatActivity() {
 
                 searchListAdapter.clear()
                 searchListAdapter.sortRefresh(list)
+            }
+
+            onClickItem = { data ->
+                Intent(this@MainActivity, DetailActivity::class.java).apply {
+                    putExtra(DetailActivity.EXTRA_DATA, data)
+                    startActivity(this)
+                }
             }
         }
 

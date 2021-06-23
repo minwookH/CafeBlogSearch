@@ -22,6 +22,7 @@ class SearchListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var onClickFillter: ((String) -> Unit)? = null
     var onClickSort: ((String) -> Unit)? = null
+    var onClickItem: ((SearchItem) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
@@ -34,7 +35,9 @@ class SearchListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
             else -> {
                 val bind = ListItemSearchBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-                SearchViewHolder(bind)
+                SearchViewHolder(bind).apply {
+                    onClick = { data -> onClickItem?.invoke(data)}
+                }
             }
         }
     }
