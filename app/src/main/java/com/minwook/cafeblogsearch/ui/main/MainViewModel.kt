@@ -30,49 +30,17 @@ class MainViewModel @Inject constructor(
     private val compositeDisposable = CompositeDisposable()
 
     fun loadSearchList(text: String, page: Int = 1) {
-        Log.e("search", "loadSearchList text start : $text")
-        // todo merge
-
-        /*compositeDisposable.add(
-            searchRepository.getBlogSearchResult(text)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    _searchList.value = it.documents
-
-
-                    Log.e("coin", "loadSearchList blog # : ${it.documents}")
-                }, {
-                    Log.e("coin", "loadSearchList error : ${it.localizedMessage}")
-                })
-        )
-
-        compositeDisposable.add(
-            searchRepository.getCafeSearchResult(text)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    //_searchList.value = it.documents
-
-                    Log.e("coin", "loadSearchList cafe ~ : ${it.documents}")
-                }, {
-                    Log.e("coin", "loadSearchList error : ${it.localizedMessage}")
-                })
-        )*/
-
         compositeDisposable.add(
             Single.zip(
                 searchRepository.getBlogSearchResult(text, page).subscribeOn(Schedulers.io()),
                 searchRepository.getCafeSearchResult(text, page).subscribeOn(Schedulers.io()),
                 BiFunction { firstResonse: BlogResponse,
                              secondResponse: CafeResponse ->
-                    addItemList(firstResonse.documents, secondResponse.documents)
+                    combineItemList(firstResonse.documents, secondResponse.documents)
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Log.d("search", "loadSearchList zip ~11 : $it")
                     it.sortByDescending { item -> item.title }
-                    Log.d("search", "loadSearchList zip ~22 : $it")
                     _searchList.value = it
                 }, {
                     Log.e("search", "loadSearchList error : ${it.localizedMessage}")
@@ -80,7 +48,45 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    private fun addItemList(firstList: ArrayList<Blog>, secondList: ArrayList<Cafe>): ArrayList<SearchItem> {
+    fun loadBlogSearchList(text: String, page: Int = 1) {
+        compositeDisposable.add(
+            searchRepository.getBlogSearchResult(text, page)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    val blogList = arrayListOf<SearchItem>()
+
+                    it.documents.forEach {
+                        blogList.add(SearchItem(it.title, it.contents, it.url, it.blogname, it.thumbnail, it.datetime, "blog"))
+                    }
+
+                    _searchList.value = blogList
+                }, {
+                    Log.e("search", "loadSearchList error : ${it.localizedMessage}")
+                })
+        )
+    }
+
+    fun loadCafeSearchList(text: String, page: Int = 1) {
+        compositeDisposable.add(
+            searchRepository.getCafeSearchResult(text, page)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    val cafeList = arrayListOf<SearchItem>()
+
+                    it.documents.forEach {
+                        cafeList.add(SearchItem(it.title, it.contents, it.url, it.cafename, it.thumbnail, it.datetime, "cafe"))
+                    }
+
+                    _searchList.value = cafeList
+                }, {
+                    Log.e("search", "loadSearchList error : ${it.localizedMessage}")
+                })
+        )
+    }
+
+    private fun combineItemList(firstList: ArrayList<Blog>, secondList: ArrayList<Cafe>): ArrayList<SearchItem> {
         val searchList = arrayListOf<SearchItem>()
 
         firstList.forEach {
@@ -91,7 +97,6 @@ class MainViewModel @Inject constructor(
             searchList.add(SearchItem(it.title, it.contents, it.url, it.cafename, it.thumbnail, it.datetime, "cafe"))
         }
 
-        Log.d("search", "zip Blog size : ${firstList.size} , Cafe size : ${secondList.size} , searchList : ${searchList.size}")
         return searchList
     }
 

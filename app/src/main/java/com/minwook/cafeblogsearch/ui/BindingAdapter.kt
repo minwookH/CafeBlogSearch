@@ -1,7 +1,6 @@
 package com.minwook.cafeblogsearch.ui
 
 import android.text.Html
-import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -15,9 +14,7 @@ object BindingAdapter {
 
     @JvmStatic
     @BindingAdapter("thumbnailImage")
-    fun bindThumbnailImage(view: ImageView, url: String?) {
-
-        Log.d("search", "bindThumbnailImage url ~ : $url")
+    fun bindThumbnailImage(view: ImageView, url: String) {
         Glide.with(view.context)
             .load(url)
             .into(view)

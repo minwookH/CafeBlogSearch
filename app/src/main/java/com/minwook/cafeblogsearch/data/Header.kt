@@ -1,5 +1,8 @@
 package com.minwook.cafeblogsearch.data
 
 data class Header(
-    val arrayResource: Int
+    val fillterArrayResource: Int,
+    val sortArrayResource: Int,
+    var fillterSelectPosition: Int,
+    var sortSelectPosition: Int
 )

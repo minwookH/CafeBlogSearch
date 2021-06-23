@@ -18,25 +18,25 @@ class SearchListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     private var list: ArrayList<Any> = arrayListOf()
+    private var seartchItemlist: ArrayList<SearchItem> = arrayListOf()
 
-    var onClickContents: ((SearchItem) -> Unit)? = null
+    var onClickFillter: ((String) -> Unit)? = null
+    var onClickSort: ((String) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             TYPE_HEADER -> {
                 val bind = ListItemHeaderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-                HeaderViewHolder(bind)
+                HeaderViewHolder(bind).apply {
+                    onFillterClick = { fillter -> onClickFillter?.invoke(fillter) }
+                    onSortClick = { sort -> onClickSort?.invoke(sort) }
+                }
             }
             else -> {
                 val bind = ListItemSearchBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 SearchViewHolder(bind)
             }
         }
-
-        /*val bind = ListItemCoinBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return CoinViewHolder(bind).apply {
-            onClick = { coin -> onClickContents?.invoke(coin) }
-        }*/
     }
 
     override fun getItemCount(): Int = list.size
@@ -65,13 +65,26 @@ class SearchListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun setSearchList(searchlist: ArrayList<SearchItem>) {
         this.list.addAll(searchlist)
+        seartchItemlist.addAll(searchlist)
         notifyDataSetChanged()
     }
 
     fun getList(): ArrayList<Any> = list
 
+    fun getSearchItemList(): ArrayList<SearchItem> = seartchItemlist
+
     fun clear() {
+        val header = list[0]
         list.clear()
+        list.add(header)
+    }
+
+    fun searchListClear() {
+        seartchItemlist.clear()
+    }
+
+    fun sortRefresh(searchList: ArrayList<SearchItem>) {
+        list.addAll(seartchItemlist)
         notifyDataSetChanged()
     }
 }

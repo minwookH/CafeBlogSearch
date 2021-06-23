@@ -6,11 +6,12 @@ import com.minwook.cafeblogsearch.databinding.ListItemSearchBinding
 
 class SearchViewHolder(private var bind: ListItemSearchBinding) : RecyclerView.ViewHolder(bind.root) {
 
-    //var onClick: ((Ticker) -> Unit)? = null
+    var onClick: ((SearchItem) -> Unit)? = null
 
     fun bind(data: SearchItem) {
         bind.searchItem = data
-        /*bind.ticker = ticker
-        bind.clCoinContent.setOnClickListener { onClick?.invoke(ticker) }*/
+        bind.clSearchItem.setOnClickListener {
+            onClick?.invoke(data)
+        }
     }
 }

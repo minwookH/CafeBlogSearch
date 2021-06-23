@@ -2,8 +2,13 @@
     <string name="app_name">CafeBlogSearch</string>
 
     <string-array name="fillter_array">
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
+        <item>All</item>
+        <item>Blog</item>
+        <item>Cafe</item>
+    </string-array>
+
+    <string-array name="sort_array">
+        <item>Title</item>
+        <item>Datetime</item>
     </string-array>
 </resources>

@@ -1,7 +1,6 @@
 package com.minwook.cafeblogsearch
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -12,15 +11,16 @@ import com.minwook.cafeblogsearch.databinding.ActivityMainBinding
 import com.minwook.cafeblogsearch.ui.main.MainViewModel
 import com.minwook.cafeblogsearch.ui.main.SearchListAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import org.joda.time.DateTime
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var searchListAdapter: SearchListAdapter
-    private val mainViewModel by viewModels<MainViewModel>()
-
+    private lateinit var fillterType: String
     private var page = 1
+    private val mainViewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,8 +35,45 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initView() {
-        searchListAdapter = SearchListAdapter()
-        searchListAdapter.addHeader(Header(R.array.fillter_array))
+        searchListAdapter = SearchListAdapter().apply {
+            onClickFillter = { fillter ->
+                page = 1
+                searchListAdapter.clear()
+                searchListAdapter.searchListClear()
+                fillterType = fillter
+
+                when (fillter) {
+                    "Blog" -> {
+                        mainViewModel.loadBlogSearchList("사과")
+                    }
+                    "Cafe" -> {
+                        mainViewModel.loadCafeSearchList("사과")
+                    }
+                    else -> {
+                        mainViewModel.loadSearchList("사과")
+                    }
+                }
+            }
+
+            onClickSort = { sort ->
+                val list = when (sort) {
+                    "Title" -> {
+                        searchListAdapter.getSearchItemList().sortByDescending { it.title }
+                        searchListAdapter.getSearchItemList()
+                    }
+                    else -> {
+                        searchListAdapter.getSearchItemList().sortByDescending { DateTime(it.datetime).millis }
+                        searchListAdapter.getSearchItemList()
+                    }
+                }
+
+                searchListAdapter.clear()
+                searchListAdapter.sortRefresh(list)
+            }
+        }
+
+        searchListAdapter.addHeader(Header(R.array.fillter_array, R.array.sort_array, 0, 0))
+        fillterType = resources.getStringArray(R.array.fillter_array)[0]
 
         binding.apply {
             rvList.adapter = searchListAdapter
@@ -50,7 +87,17 @@ class MainActivity : AppCompatActivity() {
                     val itemTotalCount = recyclerView.adapter?.itemCount ?: 0
 
                     if (newState == RecyclerView.SCROLL_STATE_IDLE && lastPosition >= itemTotalCount - 1) {
-                        mainViewModel.loadSearchList("사과", ++page)
+                        when (fillterType) {
+                            "Blog" -> {
+                                mainViewModel.loadBlogSearchList("사과", ++page)
+                            }
+                            "Cafe" -> {
+                                mainViewModel.loadCafeSearchList("사과", ++page)
+                            }
+                            else -> {
+                                mainViewModel.loadSearchList("사과", ++page)
+                            }
+                        }
                     }
                 }
             })
@@ -59,9 +106,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initObserve() {
         mainViewModel.searchList.observe(this, {
-            Log.d("search", "initObserve size : ${it.size}")
             searchListAdapter.setSearchList(it)
-            Log.d("search", "initObserve searchListAdapter size : ${searchListAdapter.getList().size}")
         })
     }
 
