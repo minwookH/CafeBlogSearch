@@ -66,6 +66,11 @@ class SearchListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         list.add(header)
     }
 
+    fun addSearchItem(searchItem: SearchItem) {
+        list.add(searchItem)
+        seartchItemlist.add(searchItem)
+    }
+
     fun setSearchList(searchlist: ArrayList<SearchItem>) {
         this.list.addAll(searchlist)
         seartchItemlist.addAll(searchlist)
@@ -87,6 +92,7 @@ class SearchListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     fun sortRefresh() {
+        clear()
         list.addAll(seartchItemlist)
         notifyDataSetChanged()
     }

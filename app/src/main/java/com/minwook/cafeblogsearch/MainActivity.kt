@@ -20,7 +20,6 @@ import com.minwook.cafeblogsearch.ui.main.SearchListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import org.joda.time.DateTime
 
-
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
@@ -64,7 +63,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                searchListAdapter.clear()
                 searchListAdapter.sortRefresh()
             }
 

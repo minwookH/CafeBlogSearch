@@ -34,7 +34,7 @@ class MainViewModel @Inject constructor(
 
     private val compositeDisposable = CompositeDisposable()
 
-    fun loadSearchList(text: String, page: Int = 1) {
+    private fun loadSearchList(text: String, page: Int = 1) {
         compositeDisposable.add(
             Single.zip(
                 searchRepository.getBlogSearchResult(text, page).subscribeOn(Schedulers.io()),
@@ -53,7 +53,7 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    fun loadBlogSearchList(text: String, page: Int = 1) {
+    private fun loadBlogSearchList(text: String, page: Int = 1) {
         compositeDisposable.add(
             searchRepository.getBlogSearchResult(text, page)
                 .subscribeOn(Schedulers.io())
@@ -72,7 +72,7 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    fun loadCafeSearchList(text: String, page: Int = 1) {
+    private fun loadCafeSearchList(text: String, page: Int = 1) {
         compositeDisposable.add(
             searchRepository.getCafeSearchResult(text, page)
                 .subscribeOn(Schedulers.io())
@@ -131,7 +131,7 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    private fun combineItemList(firstList: ArrayList<Blog>, secondList: ArrayList<Cafe>): ArrayList<SearchItem> {
+    fun combineItemList(firstList: ArrayList<Blog>, secondList: ArrayList<Cafe>): ArrayList<SearchItem> {
         val searchList = arrayListOf<SearchItem>()
 
         firstList.forEach {
