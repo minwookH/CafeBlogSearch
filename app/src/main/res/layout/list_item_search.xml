@@ -13,7 +13,8 @@
         android:id="@+id/cl_search_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp">
+        android:layout_margin="5dp"
+        app:isWebPageCheck="@{searchItem.webPageChecked}">
 
         <TextView
             android:id="@+id/tv_label"

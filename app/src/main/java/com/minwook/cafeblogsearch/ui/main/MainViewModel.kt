@@ -91,6 +91,20 @@ class MainViewModel @Inject constructor(
         )
     }
 
+    fun getSearch(text: String, type: String, page: Int = 1) {
+        when (type) {
+            "Blog" -> {
+                loadBlogSearchList(text, page)
+            }
+            "Cafe" -> {
+                loadCafeSearchList(text, page)
+            }
+            else -> {
+                loadSearchList(text, page)
+            }
+        }
+    }
+
     fun getSearchHistory() {
         compositeDisposable.add(
             searchRepository.getSearchHistory()

@@ -7,6 +7,7 @@ import android.webkit.WebViewClient
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
+import com.minwook.cafeblogsearch.RxBus
 import com.minwook.cafeblogsearch.databinding.ActivityWebviewBinding
 import com.minwook.cafeblogsearch.ui.main.MainViewModel
 import com.minwook.cafeblogsearch.ui.main.SearchListAdapter
@@ -56,6 +57,9 @@ class WebviewActivity : AppCompatActivity() {
 
             url?.let {
                 wbWeb.loadUrl(it)
+                
+                //웹 페이지 확인
+                RxBus.publish(it)
             }
         }
     }

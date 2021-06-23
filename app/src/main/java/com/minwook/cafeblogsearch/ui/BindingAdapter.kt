@@ -1,6 +1,6 @@
 package com.minwook.cafeblogsearch.ui
 
-import android.text.Html
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -48,5 +48,15 @@ object BindingAdapter {
     @BindingAdapter("htmlText")
     fun bindHtmlText(view: TextView, text: String) {
         view.text = HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_LEGACY)
+    }
+
+    @JvmStatic
+    @BindingAdapter("isWebPageCheck")
+    fun bindIsWebPageCheck(view: View, isChecked: Boolean) {
+        if (isChecked) {
+            view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.c_4D000000))
+        } else {
+            view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.white))
+        }
     }
 }

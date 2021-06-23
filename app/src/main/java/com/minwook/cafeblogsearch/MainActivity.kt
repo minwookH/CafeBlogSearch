@@ -1,8 +1,10 @@
 package com.minwook.cafeblogsearch
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import androidx.activity.viewModels
@@ -38,6 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         initView()
         initObserve()
+        initRxBus()
         mainViewModel.getSearchHistory()
     }
 
@@ -46,11 +49,11 @@ class MainActivity : AppCompatActivity() {
             onClickFillter = { fillter ->
                 searchInit()
                 fillterType = fillter
-                getSearch(searchText, fillter)
+                mainViewModel.getSearch(searchText, fillter)
             }
 
             onClickSort = { sort ->
-                val list = when (sort) {
+                when (sort) {
                     "Title" -> {
                         searchListAdapter.getSearchItemList().sortBy { it.title }
                         searchListAdapter.getSearchItemList()
@@ -62,7 +65,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 searchListAdapter.clear()
-                searchListAdapter.sortRefresh(list)
+                searchListAdapter.sortRefresh()
             }
 
             onClickItem = { data ->
@@ -88,7 +91,7 @@ class MainActivity : AppCompatActivity() {
                     val itemTotalCount = recyclerView.adapter?.itemCount ?: 0
 
                     if (newState == RecyclerView.SCROLL_STATE_IDLE && lastPosition >= itemTotalCount - 1) {
-                        getSearch(searchText, fillterType, ++page)
+                        mainViewModel.getSearch(searchText, fillterType, ++page)
                     }
                 }
             })
@@ -98,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                 searchHistoryAdapter.getItem(position)?.let {
                     searchText = it
                     searchInit()
-                    getSearch(it, fillterType)
+                    mainViewModel.getSearch(it, fillterType)
                 }
             }
 
@@ -108,7 +111,7 @@ class MainActivity : AppCompatActivity() {
                 searchHistoryAdapter.add(actvSearch.text.toString())
                 mainViewModel.insertSearchHistory(actvSearch.text.toString())
                 searchInit()
-                getSearch(searchText, fillterType)
+                mainViewModel.getSearch(searchText, fillterType)
             }
         }
     }
@@ -125,17 +128,11 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun getSearch(text: String, type: String, page: Int = 1) {
-        when (type) {
-            "Blog" -> {
-                mainViewModel.loadBlogSearchList(text, page)
-            }
-            "Cafe" -> {
-                mainViewModel.loadCafeSearchList(text, page)
-            }
-            else -> {
-                mainViewModel.loadSearchList(text, page)
-            }
+    @SuppressLint("CheckResult")
+    private fun initRxBus() {
+        RxBus.listen(String::class.java).subscribe { url ->
+            val position = searchListAdapter.getSearchItemList().indexOfFirst { it.url == url }
+            searchListAdapter.setWebPageCheck(position + 1)
         }
     }
 

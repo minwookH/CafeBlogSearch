@@ -86,8 +86,13 @@ class SearchListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         seartchItemlist.clear()
     }
 
-    fun sortRefresh(searchList: ArrayList<SearchItem>) {
+    fun sortRefresh() {
         list.addAll(seartchItemlist)
         notifyDataSetChanged()
+    }
+
+    fun setWebPageCheck(position: Int) {
+        (list[position] as SearchItem).isWebPageChecked = true
+        notifyItemChanged(position)
     }
 }

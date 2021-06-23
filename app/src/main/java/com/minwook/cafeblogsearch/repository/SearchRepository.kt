@@ -26,6 +26,6 @@ class SearchRepository @Inject constructor(
     }
 
     fun insertSearchHistory(text: String) {
-        searchDAO.insert(SearchHistoryEntity(text))
+        searchDAO.insertSearchHistory(SearchHistoryEntity(text))
     }
 }
