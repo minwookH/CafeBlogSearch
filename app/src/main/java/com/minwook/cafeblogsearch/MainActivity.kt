@@ -6,6 +6,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.minwook.cafeblogsearch.data.Header
 import com.minwook.cafeblogsearch.databinding.ActivityMainBinding
 import com.minwook.cafeblogsearch.ui.main.MainViewModel
@@ -41,6 +42,18 @@ class MainActivity : AppCompatActivity() {
             rvList.adapter = searchListAdapter
             rvList.layoutManager = LinearLayoutManager(this@MainActivity)
             rvList.addItemDecoration(DividerItemDecoration(this@MainActivity, LinearLayoutManager.VERTICAL))
+            rvList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+
+                    val lastPosition = (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+                    val itemTotalCount = recyclerView.adapter?.itemCount ?: 0
+
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE && lastPosition >= itemTotalCount - 1) {
+                        mainViewModel.loadSearchList("사과", ++page)
+                    }
+                }
+            })
         }
     }
 
@@ -48,6 +61,7 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.searchList.observe(this, {
             Log.d("search", "initObserve size : ${it.size}")
             searchListAdapter.setSearchList(it)
+            Log.d("search", "initObserve searchListAdapter size : ${searchListAdapter.getList().size}")
         })
     }
 
