@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import androidx.activity.viewModels
@@ -115,15 +114,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initObserve() {
-        mainViewModel.searchList.observe(this, {
-            searchListAdapter.setSearchList(it)
-        })
+        mainViewModel.searchList.observe(
+            this,
+            {
+                searchListAdapter.setSearchList(it)
+            }
+        )
 
-        mainViewModel.searchHistoryList.observe(this, {
-            searchHistoryAdapter =
-                ArrayAdapter<String>(this@MainActivity, android.R.layout.select_dialog_item, it)
-            binding.actvSearch.setAdapter(searchHistoryAdapter)
-        })
+        mainViewModel.searchHistoryList.observe(
+            this,
+            {
+                searchHistoryAdapter =
+                    ArrayAdapter<String>(this@MainActivity, android.R.layout.select_dialog_item, it)
+                binding.actvSearch.setAdapter(searchHistoryAdapter)
+            }
+        )
     }
 
     @SuppressLint("CheckResult")

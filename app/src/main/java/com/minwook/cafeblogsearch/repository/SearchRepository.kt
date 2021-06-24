@@ -2,9 +2,9 @@ package com.minwook.cafeblogsearch.repository
 
 import com.minwook.cafeblogsearch.data.BlogResponse
 import com.minwook.cafeblogsearch.data.CafeResponse
+import com.minwook.cafeblogsearch.db.SearchDAO
 import com.minwook.cafeblogsearch.db.SearchHistoryEntity
 import com.minwook.cafeblogsearch.network.ServerAPI
-import com.minwook.cafeblogsearch.db.SearchDAO
 import io.reactivex.Single
 import javax.inject.Inject
 

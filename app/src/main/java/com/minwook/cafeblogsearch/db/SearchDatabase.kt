@@ -7,5 +7,4 @@ import androidx.room.RoomDatabase
 abstract class SearchDatabase : RoomDatabase() {
 
     abstract fun searchDAO(): SearchDAO
-
 }

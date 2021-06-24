@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import com.minwook.cafeblogsearch.data.*
 import com.minwook.cafeblogsearch.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -40,16 +39,20 @@ class MainViewModel @Inject constructor(
                 searchRepository.getBlogSearchResult(text, page).subscribeOn(Schedulers.io()),
                 searchRepository.getCafeSearchResult(text, page).subscribeOn(Schedulers.io()),
                 BiFunction { firstResonse: BlogResponse,
-                             secondResponse: CafeResponse ->
+                    secondResponse: CafeResponse ->
                     combineItemList(firstResonse.documents, secondResponse.documents)
-                })
+                }
+            )
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    it.sortBy { item -> item.title }
-                    _searchList.value = it
-                }, {
-                    Log.e("search", "loadSearchList error : ${it.localizedMessage}")
-                })
+                .subscribe(
+                    {
+                        it.sortBy { item -> item.title }
+                        _searchList.value = it
+                    },
+                    {
+                        Log.e("search", "loadSearchList error : ${it.localizedMessage}")
+                    }
+                )
         )
     }
 
@@ -58,17 +61,20 @@ class MainViewModel @Inject constructor(
             searchRepository.getBlogSearchResult(text, page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    val blogList = arrayListOf<SearchItem>()
+                .subscribe(
+                    {
+                        val blogList = arrayListOf<SearchItem>()
 
-                    it.documents.forEach {
-                        blogList.add(SearchItem(it.title, it.contents, it.url, it.blogname, it.thumbnail, it.datetime, "blog"))
+                        it.documents.forEach {
+                            blogList.add(SearchItem(it.title, it.contents, it.url, it.blogname, it.thumbnail, it.datetime, "blog"))
+                        }
+
+                        _searchList.value = blogList
+                    },
+                    {
+                        Log.e("search", "loadSearchList error : ${it.localizedMessage}")
                     }
-
-                    _searchList.value = blogList
-                }, {
-                    Log.e("search", "loadSearchList error : ${it.localizedMessage}")
-                })
+                )
         )
     }
 
@@ -77,17 +83,20 @@ class MainViewModel @Inject constructor(
             searchRepository.getCafeSearchResult(text, page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    val cafeList = arrayListOf<SearchItem>()
+                .subscribe(
+                    {
+                        val cafeList = arrayListOf<SearchItem>()
 
-                    it.documents.forEach {
-                        cafeList.add(SearchItem(it.title, it.contents, it.url, it.cafename, it.thumbnail, it.datetime, "cafe"))
+                        it.documents.forEach {
+                            cafeList.add(SearchItem(it.title, it.contents, it.url, it.cafename, it.thumbnail, it.datetime, "cafe"))
+                        }
+
+                        _searchList.value = cafeList
+                    },
+                    {
+                        Log.e("search", "loadSearchList error : ${it.localizedMessage}")
                     }
-
-                    _searchList.value = cafeList
-                }, {
-                    Log.e("search", "loadSearchList error : ${it.localizedMessage}")
-                })
+                )
         )
     }
 
@@ -110,24 +119,30 @@ class MainViewModel @Inject constructor(
             searchRepository.getSearchHistory()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    val map = it.map { data -> data.searchText }
-                    _searchHistoryList.postValue(map)
-                }, {
-                    _searchHistoryList.postValue(listOf())
-                    Log.e("search", "loadSearchList error : ${it.localizedMessage}")
-                })
+                .subscribe(
+                    {
+                        val map = it.map { data -> data.searchText }
+                        _searchHistoryList.postValue(map)
+                    },
+                    {
+                        _searchHistoryList.postValue(listOf())
+                        Log.e("search", "loadSearchList error : ${it.localizedMessage}")
+                    }
+                )
         )
     }
 
     fun insertSearchHistory(text: String) {
         compositeDisposable.add(
             Single.just(text).subscribeOn(Schedulers.io())
-                .subscribe({
-                    searchRepository.insertSearchHistory(it)
-                }, {
-                    Log.e("search", it.localizedMessage)
-                })
+                .subscribe(
+                    {
+                        searchRepository.insertSearchHistory(it)
+                    },
+                    {
+                        Log.e("search", it.localizedMessage)
+                    }
+                )
         )
     }
 

@@ -54,10 +54,12 @@ class HeaderViewHolder(private var bind: ListItemHeaderBinding) : RecyclerView.V
         }
 
         bind.btSort.setOnClickListener {
-            AlertDialog.Builder(it.context).setSingleChoiceItems(sortArray, data.sortSelectPosition,
+            AlertDialog.Builder(it.context).setSingleChoiceItems(
+                sortArray, data.sortSelectPosition,
                 DialogInterface.OnClickListener { dialog, which ->
                     sortSeletedPosition = which
-                })
+                }
+            )
                 .setPositiveButton("선택") { dialog, which ->
                     // 기존 정렬 Type과 다른 경우만 정렬 재시도
                     if (data.sortSelectPosition != sortSeletedPosition) {

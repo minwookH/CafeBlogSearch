@@ -19,7 +19,7 @@ object DatabaseModule {
     fun provideChannelDao(searchDatabase: SearchDatabase): SearchDAO {
         return searchDatabase.searchDAO()
     }
-    
+
     @Provides
     @Singleton
     fun provideCoinDatabase(@ApplicationContext appContext: Context): SearchDatabase {

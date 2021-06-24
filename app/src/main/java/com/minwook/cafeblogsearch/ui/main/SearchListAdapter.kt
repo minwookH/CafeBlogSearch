@@ -36,7 +36,7 @@ class SearchListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             else -> {
                 val bind = ListItemSearchBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 SearchViewHolder(bind).apply {
-                    onClick = { data -> onClickItem?.invoke(data)}
+                    onClick = { data -> onClickItem?.invoke(data) }
                 }
             }
         }

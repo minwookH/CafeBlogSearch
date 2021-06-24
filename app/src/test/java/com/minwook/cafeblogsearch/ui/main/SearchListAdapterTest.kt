@@ -3,11 +3,9 @@ package com.minwook.cafeblogsearch.ui.main
 import com.minwook.cafeblogsearch.data.Header
 import com.minwook.cafeblogsearch.data.SearchItem
 import junit.framework.TestCase
-
-import org.junit.Test
-
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Test
 
 class SearchListAdapterTest : TestCase() {
 
